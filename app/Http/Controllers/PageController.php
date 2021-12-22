@@ -79,13 +79,16 @@ class PageController extends Controller
     public function Detail(Request $request)
     {
         if (request()->ajax()) {
-            $data = DB::select('SELECT YEAR(created_at) no_year, COUNT(id) as total from readings  group by no_year order by no_year asc');
+            $data = DB::select('SELECT YEAR(created_at) no_year from readings  group by no_year order by no_year asc');
 
             return Datatables::of($data)->addColumn('action', function ($act) {
 
                 $year = $act->no_year;
                 $id = $year;
-                $btn = ' <a href="' . route("year", $id) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek">Detail</a>';
+                $btn = ' <a href="' . route("year", $id) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+              </svg></a>';
 
                 return $btn;
             })
@@ -100,12 +103,15 @@ class PageController extends Controller
     public function Year(Request $request, $year)
     {
         if (request()->ajax()) {
-            $data = DB::select("SELECT month(created_at) no_mon, MONTHNAME(created_at) mon, YEAR(created_at) no_year, COUNT(id) as total from readings WHERE YEAR(created_at) = '$year' group by no_mon, mon, no_year order by no_mon asc;");
+            $data = DB::select("SELECT month(created_at) no_mon, MONTHNAME(created_at) mon, YEAR(created_at) no_year from readings WHERE YEAR(created_at) = '$year' group by no_mon, mon, no_year order by no_mon asc;");
 
             return Datatables::of($data)->addColumn('action', function ($act) {
 
                 $id = $act->mon . "-" . $act->no_year;
-                $btn = ' <a href="' . route("month", $id) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek">Detail</a>';
+                $btn = ' <a href="' . route("month", $id) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+              </svg></a>';
 
                 return $btn;
             })
@@ -114,24 +120,19 @@ class PageController extends Controller
 
         $max = DB::select("SELECT MAX(value) maxVal FROM readings WHERE YEAR(created_at) = '$year' ");
         $avg = DB::select("SELECT  ROUND(AVG(value), 2) as avg FROM readings WHERE YEAR(created_at) = '$year' ");
-        $most = DB::select("SELECT  MONTH(created_at) mon, MONTHNAME(created_at) no_month, AVG(value) as avg FROM readings WHERE YEAR(created_at) = '2021' GROUP BY no_month, mon order by avg desc LIMIT 1");
+        $most = DB::select("SELECT  MONTH(created_at) mon, MONTHNAME(created_at) no_month, AVG(value) as avg FROM readings WHERE YEAR(created_at) = '$year' GROUP BY no_month, mon order by avg desc LIMIT 1");
         return view('year', compact('max', 'avg', 'most'));
     }
     public function Month(Request $request, $mon)
     {
         $date = explode("-", $mon);
         if (request()->ajax()) {
-            $data = DB::select("SELECT week(DATE_SUB(DATE(created_at), INTERVAL 1 DAY)) no_week, DATE_ADD(DATE(created_at), INTERVAL(-WEEKDAY(created_at)) DAY) interv ,COUNT(id) as total from readings WHERE MONTHNAME(created_at) = '$date[0]' and YEAR(created_at) = '$date[1]' group by no_week, interv order by no_week asc;");
+            $data = DB::select("SELECT week(DATE_SUB(DATE(created_at), INTERVAL 1 DAY)) no_week, DATE_ADD(DATE(created_at), INTERVAL(-WEEKDAY(created_at)) DAY) interv from readings WHERE MONTHNAME(created_at) = '$date[0]' and YEAR(created_at) = '$date[1]' group by no_week, interv order by no_week asc;");
 
-            return Datatables::of($data)->addColumn('sdate', function ($row) {
-
-                // $mysqldate = date('Y-m-d H:i:s', strtotime($row->interv));
-                $mysqldate = date('Y-m-d ', strtotime($row->interv));
-                return $mysqldate;
-            })->addColumn('edate', function ($row) {
-
-                $mysqldate = date('Y-m-d', strtotime($row->interv . ' + 6 days'));
-
+            return Datatables::of($data)->addColumn('edate', function ($row) {
+                $d1 = date('d M Y', strtotime($row->interv));
+                $d2 = date('d M Y', strtotime($row->interv . ' + 6 days'));
+                $mysqldate = $d1 . " sampai " . $d2;
                 return $mysqldate;
             })
                 ->addColumn('action', function ($act) {
@@ -140,7 +141,10 @@ class PageController extends Controller
                     $edate = date('Y-m-d', strtotime($act->interv . ' + 6 days'));
 
                     $id = $sdate . "" . $edate;
-                    $btn = ' <a href="' . route("week", $id) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek">Detail</a>';
+                    $btn = ' <a href="' . route("week", $id) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                  </svg></a>';
 
                     return $btn;
                 })
@@ -149,7 +153,7 @@ class PageController extends Controller
 
         $max = DB::select("SELECT MAX(value) maxVal FROM readings WHERE MONTHNAME(created_at) = '$date[0]' and YEAR(created_at) = '$date[1]' ");
         $avg = DB::select("SELECT  ROUND(AVG(value), 2) as avg FROM readings WHERE MONTHNAME(created_at) = '$date[0]' and YEAR(created_at) = '$date[1]' ");
-        $most = DB::select("SELECT  week(DATE_SUB(DATE(created_at), INTERVAL 1 DAY)) no_week, AVG(value) as avg FROM readings WHERE MONTHNAME(created_at) = 'December' and YEAR(created_at) = '2021' group by no_week order by avg desc LIMIT 1");
+        $most = DB::select("SELECT  week(DATE_SUB(DATE(created_at), INTERVAL 1 DAY)) no_week, AVG(value) as avg FROM readings WHERE MONTHNAME(created_at) = 'December' and YEAR(created_at) = '$date[1]' group by no_week order by avg desc LIMIT 1");
         return view('month', compact('max', 'avg', 'most'));
     }
     public function Week(Request $request, $week)
@@ -161,15 +165,20 @@ class PageController extends Controller
         $date = explode(" ", $week);
         if (request()->ajax()) {
             // $data = DB::select("SELECT * FROM readings where created_at between '$date[0]' and '$date[1]' order by created_at");
-            $data = DB::select("SELECT date(created_at) no_date, count(id) total FROM readings where created_at between '$date[0]' and '$date[1]' GROUP BY DATE(created_at) order by date(created_at);");
+            $data = DB::select("SELECT date(created_at) no_date FROM readings where created_at between '$date[0]' and '$date[1]' GROUP BY DATE(created_at) order by date(created_at);");
 
             return Datatables::of($data)
-
                 ->addColumn('action', function ($act) {
 
-                    $btn = ' <a href="' . route("day", $act->no_date) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek">Detail</a>';
+                    $btn = ' <a href="' . route("day", $act->no_date) . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                  </svg></a>';
 
                     return $btn;
+                })->addColumn('no_date', function ($fun) {
+                    $d1 = date('l, d F Y', strtotime($fun->no_date));
+                    return $d1;
                 })
                 ->rawColumns(['sdate', 'edate', 'action'])->make(true);
         }
@@ -190,7 +199,10 @@ class PageController extends Controller
 
                 ->addColumn('action', function ($act) {
 
-                    $btn = ' <a href="' . route("week", '2020') . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek">Detail</a>';
+                    $btn = ' <a href="' . route("week", '2020') . '"data-original-title="Detail" class="btn btn-primary mr-1 btn-sm detailWeek"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                  </svg></a>';
 
                     return $btn;
                 })

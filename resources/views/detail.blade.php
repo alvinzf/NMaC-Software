@@ -36,7 +36,7 @@
                 },
                 subtitle: {
                     text: document.ontouchstart === undefined ?
-                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        'Klik dan tarik pada grafik untuk zoom' : 'Pinch the chart to zoom in'
                 },
                 xAxis: {
                     type: 'datetime'
@@ -90,64 +90,76 @@
 <div class="mx-auto w-75">
     <figure class="highcharts-figure">
         <div id="container"></div>
-        <p class="highcharts-description">
-            Highcharts has extensive support for time series, and will adapt
-            intelligently to the input data. Click and drag in the chart to zoom in
-            and inspect the data.
-        </p>
     </figure>
     <section class="content">
         <div class="center">
-            <div class=" d-flex flex-row">
+            <div class="d-flex justify-content-around">
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h6 font-weight-bold text-center mb-4">Maksimal</h2>
+                        @foreach ($max as $m)
+                        <div class="xprogress mx-auto" data-value='{{$m->maxVal}}'>
 
-                <div class="p-2">
-                    <div class="mask">
-                        <div class="semi-circle"></div>
-                        <div class="semi-circle--mask"></div>
+                            <span class="xprogress-left">
+                                <span class="xprogress-bar border-danger"></span>
+                            </span>
+                            <span class="xprogress-right">
+                                <span class="xprogress-bar border-danger"></span>
+                            </span>
+                            <div class="xprogress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">{{$m->maxVal}}<sup class="small">dB</sup></div>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="row text-center mt-4">
+                        </div>
                     </div>
-                    @foreach ($max as $m)
-                    <p style="font-size: 30px;" class="cent" id="max-val">Max : {{$m->maxVal}}</p>
-                    @endforeach
-                    <table cellspacing="5" cellpadding="5" class="cent">
-                        <tr>
-                            <th colspan="3"></th>
-                        </tr>
-
-                    </table>
                 </div>
-                <div class="p-2">
-                    <div class="mask">
-                        <div class="semi-circle"></div>
-                        <div class="semi-circle--mask"></div>
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h6 font-weight-bold text-center mb-4">Rata-Rata</h2>
+                        @foreach ($avg as $a)
+                        <div class="xprogress mx-auto" data-value='{{$a->avg}}'>
+
+                            <span class="xprogress-left">
+                                <span class="xprogress-bar border-warning"></span>
+                            </span>
+                            <span class="xprogress-right">
+                                <span class="xprogress-bar border-warning"></span>
+                            </span>
+                            <div class="xprogress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">{{$a->avg}}<sup class="small">dB</sup></div>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="row text-center mt-4">
+                        </div>
                     </div>
-                    @foreach ($avg as $a)
-                    <p style="font-size: 30px;" class="cent" id="temp">Average : {{$a->avg}}</p>
-                    @endforeach
-                    <table cellspacing="5" cellpadding="5" class="cent">
-                        <tr>
-                            <th colspan="3"></th>
-                        </tr>
-
-                    </table>
                 </div>
-
-
-
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h6 font-weight-bold text-center mb-4">Tahun Tertinggi</h2>
+                        @foreach ($most as $most)
+                        <div class="yprogress mx-auto">
+                            <div class="xprogress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold"> {{$most->no_year}}</div>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="row text-center mt-4">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        @foreach ($most as $most)
-        <p style="font-size: 30px;" class="cent" id="temp">Most Busy Year : {{$most->no_year}}</p>
-        @endforeach
     </section>
-    <h2> Sensor Readings </h2>
+    <p style="font-size: 25px;">Hasil Pemantauan</p>
     <table class="table table-bordered data-table">
         <thead>
             <tr>
 
-                <th>Year</th>
+                <th scope="col" style="width: 80%">Tahun</th>
 
-
-                <th>Total</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -160,21 +172,41 @@
     $(function() {
 
         var table = $('.data-table').DataTable({
+            paging: true,
+            info: true,
+            autoWidth: false,
+            responsive: true,
             processing: true,
             serverSide: true,
+            columnDefs: [{
+                    "targets": [0, 1],
+                    "className": "text-center",
+                },
+
+            ],
+            language: {
+                paginate: {
+                    next: '<span class="fas fa-arrow-right">&#8594;</span>', // or '→'
+                    previous: '<span class="fas fa-arrow-left">&#8592;</span>' // or '←' 
+                },
+                lengthMenu: "Tampilkan _MENU_ Item",
+                info: "Menampilkan _START_ - _END_ dari _TOTAL_ Item",
+                search: "Cari:",
+            },
+
+
             ajax: "{{ route('detail') }}",
             columns: [{
                     data: 'no_year',
                     name: 'no_year'
                 },
 
-                {
-                    data: 'total',
-                    name: 'total'
-                },
+
                 {
                     data: 'action',
-                    name: 'action'
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
                 },
 
 

@@ -36,7 +36,7 @@
                 },
                 subtitle: {
                     text: document.ontouchstart === undefined ?
-                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        ' Klik dan tarik pada grafik untuk zoom' : 'Pinch the chart to zoom in'
                 },
                 xAxis: {
                     type: 'datetime'
@@ -90,11 +90,7 @@
 <div class="mx-auto w-75">
     <figure class="highcharts-figure">
         <div id="container"></div>
-        <p class="highcharts-description">
-            Highcharts has extensive support for time series, and will adapt
-            intelligently to the input data. Click and drag in the chart to zoom in
-            and inspect the data.
-        </p>
+
     </figure>
     <section class="content">
         <div class="center">

@@ -36,7 +36,7 @@
                 },
                 subtitle: {
                     text: document.ontouchstart === undefined ?
-                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        ' Klik dan tarik pada grafik untuk zoom' : 'Pinch the chart to zoom in'
                 },
                 xAxis: {
                     type: 'datetime'
@@ -87,14 +87,11 @@
     );
 </script>
 
-<div class="mx-auto w-75">
+
+<div class="mx-auto w-75 h-100">
     <figure class="highcharts-figure">
         <div id="container"></div>
-        <p class="highcharts-description">
-            Highcharts has extensive support for time series, and will adapt
-            intelligently to the input data. Click and drag in the chart to zoom in
-            and inspect the data.
-        </p>
+
     </figure>
     <section class="content">
         <div class="center">
@@ -110,7 +107,7 @@
                     @endforeach
                     <table cellspacing="5" cellpadding="5" class="cent">
                         <tr>
-                            <th colspan="3">Today</th>
+                            <th colspan="3"></th>
                         </tr>
 
                     </table>
@@ -125,7 +122,7 @@
                     @endforeach
                     <table cellspacing="5" cellpadding="5" class="cent">
                         <tr>
-                            <th colspan="3">Today</th>
+                            <th colspan="3"></th>
                         </tr>
 
                     </table>
@@ -136,7 +133,7 @@
             </div>
         </div>
     </section>
-    <h2> Sensor Readings </h2>
+    <!-- <h2> Sensor Readings </h2>
     <table class="table" id="tableReadings">
 
         <thead class="thead-dark">
@@ -203,6 +200,6 @@
             </tr>
         </tbody>
 
-        @endforeach
+        @endforeach -->
 </div>
 @endsection
