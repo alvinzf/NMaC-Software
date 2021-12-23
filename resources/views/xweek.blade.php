@@ -2,19 +2,16 @@
 
 @section('content')
 <script>
-    let url = "{{ route('weekChart') }}";
+    let url = "{{ route('homeChart') }}";
 
 
     Highcharts.getJSON(
         url,
 
         function(data) {
-            // console.log(data)
 
             const _date = data.map(d => (parseInt(d.ts) * 1000));
-            // console.log(_date);
             const value = data.map(d => (parseInt(d.value)));
-            // console.log(value);
             var result = [];
             for (var i = 0; i < _date.length; i++) {
                 result.push([_date[i], value[i]]);

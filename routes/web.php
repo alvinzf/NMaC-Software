@@ -29,7 +29,7 @@ require __DIR__ . '/auth.php';
 Route::group(['middleware' => 'auth'], function () {
     // Route::get('/home', [App\Http\Controllers\PageController::class, 'Home'])->name('home');
     Route::get('/dashboard', [App\Http\Controllers\PageController::class, 'Home'])->name('dashboard');
-    Route::get('/api', [App\Http\Controllers\PageController::class, 'HomeChart'])->name('homeChart');
+
     Route::get('/week-chart/{id}', [App\Http\Controllers\PageController::class, 'DetailWeekChart'])->name('detailWeekChart');
     // Route::get('/weekly', [App\Http\Controllers\PageController::class, 'Week'])->name('week');
     Route::get('/api-week', [App\Http\Controllers\PageController::class, 'WeekChart'])->name('weekChart');
@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/week/{week}', [App\Http\Controllers\PageController::class, 'Week'])->name('week');
     Route::get('/day/{day}', [App\Http\Controllers\PageController::class, 'Day'])->name('day');
 });
+Route::get('/api', [App\Http\Controllers\PageController::class, 'HomeChart'])->name('homeChart');
 Route::get('/api-detail', [App\Http\Controllers\PageController::class, 'ApiDetail'])->name('api-detail');
 Route::get('/api-year/{year}', [App\Http\Controllers\PageController::class, 'ApiYear'])->name('api-year');
 Route::get('/api-month/{mon}', [App\Http\Controllers\PageController::class, 'ApiMonth'])->name('api-month');

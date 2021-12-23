@@ -10,6 +10,6 @@ class Readings extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id', 'sensor', 'value', 'classification', 'reading_time'
+        'id', 'sensor', 'value', 'classification', 'created_at'
     ];
 }

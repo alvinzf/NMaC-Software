@@ -13,14 +13,15 @@ class PageController extends Controller
     public function Home(Request $request)
     {
         $data = Readings::latest()->get();
-        $max = DB::select('SELECT id, value, classification FROM readings WHERE value = (SELECT  MAX(value) FROM readings) AND CURDATE()');
-        $avg = DB::select('SELECT  ROUND(AVG(value), 2) as avg FROM readings WHERE CURDATE()');
+        $max = DB::select('SELECT MAX(value) maxVal FROM readings WHERE  DATE(created_at) = CURDATE();');
+        $avg = DB::select('SELECT  ROUND(AVG(value), 2) as avg FROM readings WHERE  DATE(created_at) = CURDATE()');
         return view('dashboard', compact('data', 'max', 'avg'));
     }
 
     public function HomeChart(Request $request)
     {
-        $data = DB::select('SELECT id, sensor, value, UNIX_TIMESTAMP(created_at) as ts FROM readings  WHERE CURDATE() order by created_at');
+        $data = DB::select('SELECT value, UNIX_TIMESTAMP(created_at) as ts FROM readings order by created_at desc LIMIT 5');
+
         // $data = Readings::all()->toArray();
         return response()->json($data);
     }
@@ -62,11 +63,9 @@ class PageController extends Controller
     public function DetailWeekChart(Request $request, $id)
     {
 
-        $date = explode(" ", $id);
-        $sdate = $date[0];
-        $edate = $date[1];
-        $data = DB::select("SELECT id, sensor, value, UNIX_TIMESTAMP(created_at) as ts FROM readings where created_at between '$sdate' and '$edate' order by created_at");
-        // $data = DB::select('SELECT id, sensor, value, UNIX_TIMESTAMP(created_at) as ts FROM readings  WHERE CURDATE() order by created_at');
+        $data = DB::select('SELECT value, UNIX_TIMESTAMP(created_at) as ts FROM readings order by created_at desc LIMIT 5');
+
+        // $data = Readings::all()->toArray();
         return response()->json($data);
     }
     public function WeekChart(Request $request)
