@@ -212,8 +212,8 @@
                     name: 'value'
                 },
                 {
-                    data: 'classification',
-                    name: 'classification'
+                    data: 'classifi',
+                    name: 'classifi'
                 },
                 {
                     data: 'created_at',

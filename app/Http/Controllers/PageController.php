@@ -204,8 +204,50 @@ class PageController extends Controller
                   </svg></a>';
 
                     return $btn;
+                })->addColumn('classifi', function ($row) {
+                    $classification = $row->classification;
+                    if (strlen($classification) > 0) {
+                        $classification = explode("#", $classification);
+                        if (count($classification) > 6) {
+                            $fallingObj = round(($classification[0] + $classification[5]) / 2 * 100);
+                            $horn = round(($classification[1] + $classification[6]) / 2 * 100);
+                            $human = round(($classification[2] + $classification[7]) / 2 * 100);
+                            $phone = round(($classification[3] + $classification[8]) / 2 * 100);
+                            $siren = round(($classification[4] + $classification[9]) / 2 * 100);
+                        } else if (count($classification) > 11) {
+
+                            $fallingObj = round(($classification[0] + $classification[5]) / 2 * 100);
+                            $horn = round(($classification[1] + $classification[6]) / 2 * 100);
+                            $human = round(($classification[2] + $classification[7]) / 2 * 100);
+                            $phone = round(($classification[3] + $classification[8]) / 2 * 100);
+                            $siren = round(($classification[4] + $classification[9]) / 2 * 100);
+                        } else {
+                            $fallingObj = round($classification[0] * 100);
+                            $horn = round($classification[1] * 100);
+                            $human = round($classification[2] * 100);
+                            $phone = round($classification[3] * 100);
+                            $siren = round($classification[4] * 100);
+                        }
+
+                        if ($fallingObj > 70) {
+                            $result = "Falling Obj " . $fallingObj . "%";
+                        } else if ($horn > 70) {
+                            $result = "Horn " . $horn . "%";
+                        } else if ($human > 70) {
+                            $result = "Human " . $human . "%";
+                        } else if ($phone > 70) {
+                            $result = "Phone " . $phone . "%";
+                        } else if ($siren > 70) {
+                            $result = "Siren " . $siren . "%";
+                        } else {
+                            $result = "Not Sure";
+                        }
+                    } else {
+                        $result = "-";
+                    }
+                    return $result;
                 })
-                ->rawColumns(['sdate', 'edate', 'action'])->make(true);
+                ->rawColumns(['sdate', 'edate', 'action', 'classifi'])->make(true);
         }
 
 
